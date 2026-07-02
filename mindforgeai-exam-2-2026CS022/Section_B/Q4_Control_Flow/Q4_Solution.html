@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Control Flowchart</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1117; /* GitHub Dark theme background */
+            color: #c9d1d9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            margin: 0;
+        }
+
+        h1 { color: #58a6ff; font-weight: 300; letter-spacing: 1px; }
+
+        .controls {
+            margin-bottom: 40px;
+            background: #161b22;
+            padding: 20px 40px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 18px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #58a6ff;
+            border-radius: 4px;
+            width: 100px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Flowchart Container */
+        .flowchart {
+            display: grid;
+            grid-template-columns: 200px 100px 200px;
+            gap: 20px 10px;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Nodes */
+        .node {
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 16px;
+            border: 2px solid #30363d;
+            background: #161b22;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .diamond {
+            /* Fake diamond shape using borders */
+            border-radius: 0;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            padding: 30px 10px;
+            background: #238636;
+            color: white;
+            border: none;
+        }
+
+        .result {
+            background: #1f6feb;
+            color: white;
+            border: none;
+        }
+
+        /* Connecting Arrows (Text based for simplicity) */
+        .arrow-right { text-align: center; color: #8b949e; font-weight: bold; transition: 0.3s; }
+        .arrow-down { text-align: center; color: #8b949e; font-weight: bold; transition: 0.3s; padding: 10px 0;}
+
+        /* Active Highlight Classes */
+        .active-node {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.6);
+            z-index: 10;
+        }
+        
+        .active-diamond { background: #39d353; box-shadow: 0 0 20px rgba(57, 211, 83, 0.6); }
+        .active-result { background: #79c0ff; color: #0d1117; box-shadow: 0 0 20px rgba(121, 192, 255, 0.8); }
+        .active-arrow { color: #58a6ff; text-shadow: 0 0 10px #58a6ff; }
+        
+        .dim { opacity: 0.2; } /* Dims paths that are not taken */
+
+    </style>
+</head>
+<body>
+    <div style="position:fixed; top:12px; right:12px; z-index:9999; background:#0f1b2f; border:1px solid rgba(255,255,255,0.16); border-radius:999px; padding:8px 12px; box-shadow:0 8px 20px rgba(0,0,0,0.25);">
+      <a href="../../index.html" style="color:#f3f7ff; text-decoration:none; font-weight:600;">← Back to Home</a>
+    </div>
+    
+    <div class="controls">
+        <label for="scoreInput">Enter Student Score:</label>
+        <input type="number" id="scoreInput" value="38" oninput="traceLogic()">
+    </div>
+
+    <div class="flowchart" id="tree">
+        <div class="node diamond" id="d1">score < 40?</div>
+        <div class="arrow-right" id="a-r1">-- True &rarr;</div>
+        <div class="node result" id="r1">band = "Support"</div>
+
+        <div class="arrow-down" id="a-d1">&darr; False</div>
+        <div></div><div></div>
+
+        <div class="node diamond" id="d2">score < 70?</div>
+        <div class="arrow-right" id="a-r2">-- True &rarr;</div>
+        <div class="node result" id="r2">band = "Developing"</div>
+
+        <div class="arrow-down" id="a-d2">&darr; False</div>
+        <div></div><div></div>
+
+        <div class="node diamond" id="d3">score < 90?</div>
+        <div class="arrow-right" id="a-r3">-- True &rarr;</div>
+        <div class="node result" id="r3">band = "Strong"</div>
+
+        <div class="arrow-down" id="a-d3">&darr; False</div>
+        <div></div><div></div>
+
+        <div class="node result" id="r4" style="background: #a371f7;">band = "Excellent"</div>
+        <div></div><div></div>
+    </div>
+
+    <script>
+        function resetTree() {
+            // Remove active and dim classes from everything
+            const elements = document.querySelectorAll('#tree > div');
+            elements.forEach(el => {
+                el.classList.remove('active-node', 'active-diamond', 'active-result', 'active-arrow', 'dim');
+                // Dim everything initially
+                el.classList.add('dim'); 
+            });
+        }
+
+        function activate(id, type) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove('dim');
+            
+            if (type === 'diamond') el.classList.add('active-node', 'active-diamond');
+            else if (type === 'result') el.classList.add('active-node', 'active-result');
+            else if (type === 'arrow') el.classList.add('active-arrow');
+            else el.classList.remove('dim'); // Just undim standard text
+        }
+
+        function traceLogic() {
+            resetTree();
+            const scoreStr = document.getElementById('scoreInput').value;
+            if (scoreStr === "") return; // Do nothing if empty
+            
+            const score = parseFloat(scoreStr);
+
+            // Step 1: Always evaluate first condition
+            activate('d1', 'diamond');
+
+            if (score < 40) {
+                activate('a-r1', 'arrow');
+                activate('r1', 'result');
+            } else {
+                activate('a-d1', 'arrow');
+                activate('d2', 'diamond'); // Move to second condition
+
+                if (score < 70) {
+                    activate('a-r2', 'arrow');
+                    activate('r2', 'result');
+                } else {
+                    activate('a-d2', 'arrow');
+                    activate('d3', 'diamond'); // Move to third condition
+
+                    if (score < 90) {
+                        activate('a-r3', 'arrow');
+                        activate('r3', 'result');
+                    } else {
+                        activate('a-d3', 'arrow');
+                        activate('r4', 'result'); // Else block
+                    }
+                }
+            }
+        }
+
+        // Run once on load
+        traceLogic();
+    </script>
+</body>
+</html>

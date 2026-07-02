@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Readiness Score Computational Visualizer</title>
+    <style>
+        /* Light Theme Structural Reset */
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #f1f5f9; /* Soft slate light gray background */
+            color: #1e293b; /* Dark slate text for sharp readability */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            margin: 0;
+        }
+
+        h1 {
+            color: #0284c7; /* Professional Sky Blue */
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 35px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .workspace {
+            display: flex;
+            gap: 25px;
+            width: 1050px;
+            max-width: 100%;
+        }
+
+        /* Technical Content Cards */
+        .card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 24px;
+            flex: 1;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Form Controls */
+        .input-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+            font-weight: bold;
+            transition: border-color 0.2s;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #0284c7;
+            background: #fff;
+        }
+
+        /* Light Theme Code View Matrix */
+        .code-display {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Fira Code', Monaco, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #334155;
+        }
+        .code-line {
+            padding: 2px 8px;
+            border-radius: 4px;
+            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
+        }
+        .active-line {
+            background: #e0f2fe; /* Light blue highlight */
+            border-left-color: #0284c7;
+            color: #0369a1;
+            font-weight: 600;
+        }
+        .indent-1 { margin-left: 20px; }
+        .indent-2 { margin-left: 40px; }
+        .keyword { color: #d946ef; font-weight: bold; }
+        .defname { color: #0284c7; font-weight: bold; }
+        .comment { color: #94a3b8; font-style: italic; }
+
+        /* Data Processing Pipeline Visuals */
+        .pipeline {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex-grow: 1;
+            justify-content: center;
+        }
+        .pipe-node {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .pipe-node.active {
+            border-color: #0284c7;
+            background: #f0f9ff;
+            font-weight: 600;
+        }
+        .weight-badge {
+            background: #e2e8f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #334155;
+            font-family: monospace;
+        }
+        .pipe-node.active .weight-badge {
+            background: #bae6fd;
+            color: #0369a1;
+        }
+
+        /* Control Interface Buttons */
+        .btn-panel {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #0284c7; color: #ffffff; }
+        .btn-primary:hover { background: #0369a1; }
+        .btn-secondary { background: #e2e8f0; border-color: #cbd5e1; color: #475569; }
+        .btn-secondary:hover { background: #cbd5e1; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Output Logs Console */
+        .console {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            font-family: 'Consolas', monospace;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            min-height: 42px;
+            font-size: 13px;
+            color: #0f172a;
+            border-left: 4px solid #64748b;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div style="position:fixed; top:12px; right:12px; z-index:9999; background:#0f1b2f; border:1px solid rgba(255,255,255,0.16); border-radius:999px; padding:8px 12px; box-shadow:0 8px 20px rgba(0,0,0,0.25);">
+      <a href="../../index.html" style="color:#f3f7ff; text-decoration:none; font-weight:600;">← Back to Home</a>
+    </div>
+    <div class="subtitle">Light Theme Matrix Structure • Algorithmic Step-by-Step State Tracer</div>
+
+    <div class="workspace">
+        <div class="card">
+            <div class="card-title">1. Structural Parameters</div>
+            <div class="input-group">
+                <label>Attendance Percentage (0 - 100%):</label>
+                <input type="number" id="input-att" value="92" min="0" max="150">
+            </div>
+            <div class="input-group">
+                <label>Diary Entries Written (Max normal: 15):</label>
+                <input type="number" id="input-diary" value="12" min="0" max="30">
+            </div>
+            <div class="input-group">
+                <label>Tasks Completed (Max normal: 10):</label>
+                <input type="number" id="input-tasks" value="8" min="0" max="20">
+            </div>
+            
+            <div class="btn-panel">
+                <button class="btn-secondary" onclick="resetPipeline()">Reset Trace</button>
+                <button class="btn-primary" id="step-btn" onclick="executeNextStep()">Step Code</button>
+            </div>
+
+            <div class="console" id="console-output">
+                System Framework: Active and waiting to run.
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">2. Processing Core (Source)</div>
+            <div class="code-display">
+                <div id="line1" class="code-line"><span class="keyword">def</span> <span class="defname">readiness_score</span>(attendance_pct, diary_entries, task_count):</div>
+                <div id="line2" class="code-line indent-1"><span class="comment"># Allocation: 40% Weightage</span></div>
+                <div id="line3" class="code-line indent-1">att_component = attendance_pct * <span class="keyword">0.40</span></div>
+                <div id="line4" class="code-line indent-1"><span class="comment"># Allocation: 30% Weightage (Scale base 15)</span></div>
+                <div id="line5" class="code-line indent-1">diary_component = (diary_entries / <span class="keyword">15</span>) * <span class="keyword">100</span> * <span class="keyword">0.30</span></div>
+                <div id="line6" class="code-line indent-1"><span class="comment"># Allocation: 30% Weightage (Scale base 10)</span></div>
+                <div id="line7" class="code-line indent-1">task_component = (task_count / <span class="keyword">10</span>) * <span class="keyword">100</span> * <span class="keyword">0.30</span></div>
+                <div id="line8" class="code-line indent-1">raw_total = att_component + diary_component + task_component</div>
+                <div id="line9" class="code-line indent-1"><span class="keyword">if</span> raw_total > <span class="keyword">100</span>:</div>
+                <div id="line10" class="code-line indent-2"><span class="keyword">return</span> <span class="keyword">100.0</span></div>
+                <div id="line11" class="code-line indent-1"><span class="keyword">else</span>:</div>
+                <div id="line12" class="code-line indent-2"><span class="keyword">return</span> round(raw_total, <span class="keyword">2</span>)</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">3. Visual Pipeline Vector</div>
+            <div class="pipeline">
+                <div class="pipe-node" id="node-att">
+                    <span>Attendance Flow Component</span>
+                    <span class="weight-badge" id="val-att">Uncalculated</span>
+                </div>
+                <div class="pipe-node" id="node-diary">
+                    <span>Diary Processing Array</span>
+                    <span class="weight-badge" id="val-diary">Uncalculated</span>
+                </div>
+                <div class="pipe-node" id="node-task">
+                    <span>Task Execution Metric</span>
+                    <span class="weight-badge" id="val-task">Uncalculated</span>
+                </div>
+                <div class="pipe-node" id="node-total" style="border-style: dashed; background: #f8fafc;">
+                    <span>Raw Unbounded Sum</span>
+                    <span class="weight-badge" id="val-total" style="color: #b45309;">0.00</span>
+                </div>
+                <div class="pipe-node" id="node-output" style="background: #f0fdf4; border-color: #bbf7d0;">
+                    <span>Validated System Return</span>
+                    <span class="weight-badge" id="val-output" style="color: #166534; font-size: 14px; font-weight: bold;">---</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stepIndex = 0;
+        let runtime = { att: 0, diary: 0, tasks: 0, att_w: 0, diary_w: 0, task_w: 0, aggregate: 0 };
+
+        function resetPipeline() {
+            stepIndex = 0;
+            document.getElementById('step-btn').disabled = false;
+            
+            const consoleBox = document.getElementById('console-output');
+            consoleBox.style.color = "#0f172a";
+            consoleBox.style.borderLeftColor = "#64748b";
+            consoleBox.innerText = "System memory trace arrays cleared. Standing by.";
+            
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+            document.querySelectorAll('.pipe-node').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('val-att').innerText = "Uncalculated";
+            document.getElementById('val-diary').innerText = "Uncalculated";
+            document.getElementById('val-task').innerText = "Uncalculated";
+            document.getElementById('val-total').innerText = "0.00";
+            document.getElementById('val-output').innerText = "---";
+        }
+
+        function highlightLine(lineNum) {
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+            document.getElementById('line' + lineNum).classList.add('active-line');
+        }
+
+        function executeNextStep() {
+            stepIndex++;
+            const consoleBox = document.getElementById('console-output');
+
+            // Ingest UI data states at step initialization
+            if (stepIndex === 1) {
+                runtime.att = parseFloat(document.getElementById('input-att').value) || 0;
+                runtime.diary = parseFloat(document.getElementById('input-diary').value) || 0;
+                runtime.tasks = parseFloat(document.getElementById('input-tasks').value) || 0;
+            }
+
+            switch(stepIndex) {
+                case 1:
+                    highlightLine(1);
+                    consoleBox.innerText = `[CALL] Function invoked: arguments loaded into execution stack frame (att=${runtime.att}, diary=${runtime.diary}, tasks=${runtime.tasks})`;
+                    break;
+                case 2:
+                    highlightLine(3);
+                    runtime.att_w = runtime.att * 0.40;
+                    document.getElementById('node-att').classList.add('active');
+                    document.getElementById('val-att').innerText = `${runtime.att_w.toFixed(2)} pts`;
+                    consoleBox.innerText = `[COMPUTE] Attendance processing complete. Computed weight allocation: ${runtime.att} * 0.40 = ${runtime.att_w.toFixed(2)} points.`;
+                    break;
+                case 3:
+                    highlightLine(5);
+                    runtime.diary_w = (runtime.diary / 15) * 100 * 0.30;
+                    document.getElementById('node-diary').classList.add('active');
+                    document.getElementById('val-diary').innerText = `${runtime.diary_w.toFixed(2)} pts`;
+                    consoleBox.innerText = `[COMPUTE] Diary entries mapped and scaled to internal vector: (${runtime.diary} / 15) * 30% = ${runtime.diary_w.toFixed(2)} points.`;
+                    break;
+                case 4:
+                    highlightLine(7);
+                    runtime.task_w = (runtime.tasks / 10) * 100 * 0.30;
+                    document.getElementById('node-task').classList.add('active');
+                    document.getElementById('val-task').innerText = `${runtime.task_w.toFixed(2)} pts`;
+                    consoleBox.innerText = `[COMPUTE] Task completion scaled matrix successfully extracted: (${runtime.tasks} / 10) * 30% = ${runtime.task_w.toFixed(2)} points.`;
+                    break;
+                case 5:
+                    highlightLine(8);
+                    runtime.aggregate = runtime.att_w + runtime.diary_w + runtime.task_w;
+                    document.getElementById('node-total').classList.add('active');
+                    document.getElementById('val-total').innerText = runtime.aggregate.toFixed(2);
+                    consoleBox.innerText = `[AGGREGATE] Computed values mapped into aggregate accumulator: ${runtime.att_w.toFixed(2)} + ${runtime.diary_w.toFixed(2)} + ${runtime.task_w.toFixed(2)} = ${runtime.aggregate.toFixed(2)}`;
+                    break;
+                case 6:
+                    highlightLine(9);
+                    consoleBox.innerText = `[LOGIC GATE EVALUATION] Verifying structural overflow guard boundaries: Is raw_total (${runtime.aggregate.toFixed(2)}) > 100?`;
+                    break;
+                case 7:
+                    if (runtime.aggregate > 100) {
+                        highlightLine(10);
+                        document.getElementById('val-output').innerText = "100.00";
+                        consoleBox.style.color = "#b91c1c";
+                        consoleBox.style.borderLeftColor = "#b91c1c";
+                        consoleBox.innerText = `[GUARD BOUNDARY TRIGGERED] Overflow detected! Truth evaluation met. Capping system output to absolute threshold: 100.0`;
+                    } else {
+                        highlightLine(11);
+                        consoleBox.innerText = `[GUARD BOUNDARY PASSED] Overflow test evaluation returned False. Re-routing tracking pointer to fallback structural else-tree.`;
+                    }
+                    break;
+                case 8:
+                    if (runtime.aggregate <= 100) {
+                        highlightLine(12);
+                        let finalVal = Math.round(runtime.aggregate * 100) / 100;
+                        document.getElementById('val-output').innerText = finalVal.toFixed(2);
+                        consoleBox.style.color = "#166534";
+                        consoleBox.style.borderLeftColor = "#166534";
+                        consoleBox.innerText = `[RETURN EXPORT] Clean system return object compiled. Final output rounded: ${finalVal.toFixed(2)}`;
+                    } else {
+                        popStackFrame();
+                    }
+                    break;
+                case 9:
+                    popStackFrame();
+                    break;
+            }
+        }
+
+        function popStackFrame() {
+            highlightLine(1);
+            const consoleBox = document.getElementById('console-output');
+            consoleBox.style.color = "#0284c7";
+            consoleBox.style.borderLeftColor = "#0284c7";
+            consoleBox.innerText = "System Frame Process Complete. Execution context popped from compiler stack memory space.";
+            document.getElementById('step-btn').disabled = true;
+        }
+    </script>
+</body>
+</html>

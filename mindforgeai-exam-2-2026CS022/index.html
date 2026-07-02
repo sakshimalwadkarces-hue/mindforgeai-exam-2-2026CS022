@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MindforgeAI Exam 2 — Navigation Hub</title>
+    <meta name="description" content="Simple expandable navigation for the MindforgeAI Exam 2 workspace." />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #07111f;
+        --panel: #0f1b2f;
+        --panel-2: #16253d;
+        --text: #f3f7ff;
+        --muted: #9bb0ca;
+        --line: rgba(255, 255, 255, 0.14);
+        --accent: #3fd0ff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(135deg, var(--bg), #13203a);
+        color: var(--text);
+        line-height: 1.6;
+      }
+      a { color: inherit; text-decoration: none; }
+      .page { max-width: 960px; margin: 0 auto; padding: 32px 20px 48px; }
+      .hero {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 18px;
+      }
+      .hero h1 { margin: 0 0 8px; font-size: 1.8rem; }
+      .hero p { margin: 0; color: var(--muted); }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .home-link {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(63, 208, 255, 0.16);
+        border: 1px solid rgba(63, 208, 255, 0.28);
+        color: var(--text);
+      }
+      details {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        margin-bottom: 12px;
+        overflow: hidden;
+      }
+      summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 16px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+      }
+      summary::-webkit-details-marker { display: none; }
+      .meta {
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      .links { padding: 0 18px 18px; display: grid; gap: 8px; }
+      .link-card {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: var(--panel-2);
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+      .link-card strong { display: block; margin-bottom: 2px; }
+      .link-card span { color: var(--muted); font-size: 0.92rem; }
+      .link-card:hover { border-color: rgba(63, 208, 255, 0.28); }
+      .footer { margin-top: 20px; color: var(--muted); font-size: 0.95rem; text-align: center; }
+      @media (max-width: 600px) {
+        .topbar { flex-direction: column; align-items: flex-start; }
+        summary { align-items: flex-start; flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="topbar">
+        <div>
+          <h1>MindforgeAI Exam 2</h1>
+          <p>Navigate the solutions, notebook files, visuals, and submission materials from one place.</p>
+        </div>
+        <a class="home-link" href="index.html">Home</a>
+      </div>
+
+      <div class="hero">
+        <p>Open each section to jump directly to the relevant files for review or submission.</p>
+      </div>
+
+      <details open>
+        <summary>
+          <span>Section A · Workspace Architecture & Analytics</span>
+          <span class="meta">Solutions</span>
+        </summary>
+        <div class="links">
+          <a class="link-card" href="Section_A/Q1_Workspace_Architecture/Q1_Solution.html"><strong>Q1 Solution</strong><span>Workspace architecture overview</span></a>
+          <a class="link-card" href="Section_A/Q2_Data_Analytics_Pipeline/Q2_Solution.py"><strong>Q2 Solution Script</strong><span>Analytics pipeline implementation</span></a>
+          <a class="link-card" href="Section_A/Q2_Data_Analytics_Pipeline/visualizer.html"><strong>Q2 Visualizer</strong><span>Interactive output preview</span></a>
+          <a class="home-link" href="index.html">Back to Home</a>
+        </div>
+      </details>
+
+      <details>
+        <summary>
+          <span>Section B · Programming Foundations</span>
+          <span class="meta">Solutions</span>
+        </summary>
+        <div class="links">
+          <a class="link-card" href="Section_B/Q3_Variables_Memory/Q3_Solution.html"><strong>Q3 Solution</strong><span>Variables and memory concepts</span></a>
+          <a class="link-card" href="Section_B/Q4_Control_Flow/Q4_Solution.html"><strong>Q4 Solution</strong><span>Control flow examples</span></a>
+          <a class="link-card" href="Section_B/Q5_Loop_Function/Q5_Solution.html"><strong>Q5 Solution</strong><span>Loops and functions</span></a>
+          <a class="home-link" href="index.html">Back to Home</a>
+        </div>
+      </details>
+
+      <details>
+        <summary>
+          <span>Section C · Practical Notebook</span>
+          <span class="meta">Notebook & Data</span>
+        </summary>
+        <div class="links">
+          <a class="link-card" href="Section_C/Practical_Notebook/Section_C_Notebook.ipynb"><strong>Notebook</strong><span>Practical work notebook</span></a>
+          <a class="link-card" href="Section_C/Practical_Notebook/week_assesment.csv"><strong>Assessment Data</strong><span>CSV dataset for the notebook</span></a>
+          <a class="home-link" href="index.html">Back to Home</a>
+        </div>
+      </details>
+
+      <details>
+        <summary>
+          <span>Section D · Data Interpretation</span>
+          <span class="meta">Answers & Visuals</span>
+        </summary>
+        <div class="links">
+          <a class="link-card" href="Section_D/Data_Analytics_Interpretation/Interpretation_Answers.md"><strong>Interpretation Answers</strong><span>Written analysis responses</span></a>
+          <a class="link-card" href="Section_D/Data_Analytics_Interpretation/visulizer.html"><strong>Visualizer</strong><span>Visual interpretation output</span></a>
+          <a class="home-link" href="index.html">Back to Home</a>
+        </div>
+      </details>
+
+      <details>
+        <summary>
+          <span>Section E · Project Package</span>
+          <span class="meta">Submission Assets</span>
+        </summary>
+        <div class="links">
+          <a class="link-card" href="Section_E/mindforgeai-exam-2-Sakshi-malwadkar/README.md"><strong>Project README</strong><span>Package overview and notes</span></a>
+          <a class="link-card" href="Section_E/mindforgeai-exam-2-Sakshi-malwadkar/copy_notebook.py"><strong>Notebook Copy Script</strong><span>Copy notebook helper</span></a>
+          <a class="link-card" href="Section_E/mindforgeai-exam-2-Sakshi-malwadkar/copy_and_verify_csv.py"><strong>CSV Copy Script</strong><span>Verify and copy dataset</span></a>
+          <a class="home-link" href="index.html">Back to Home</a>
+        </div>
+      </details>
+
+      <details>
+        <summary>
+          <span>Section F · Submission Links</span>
+          <span class="meta">Submission Notes</span>
+        </summary>
+        <div class="links">
+          <a class="link-card" href="Section_F/Submission_Links/Portal_Links_Explanation.md"><strong>Portal Links Notes</strong><span>Submission guidance and links</span></a>
+          <a class="home-link" href="index.html">Back to Home</a>
+        </div>
+      </details>
+
+      <div class="footer">Use the section links above to open the files directly.</div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Memory Visualizer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 { margin-bottom: 10px; }
+        .container {
+            display: flex;
+            gap: 30px;
+            width: 900px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .panel-title {
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 10px;
+        }
+        /* Code Block Styling */
+        .code-line {
+            padding: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 4px;
+            background: #f8f9fa;
+            color: #555;
+            transition: 0.3s;
+        }
+        .code-line.active {
+            background: #ffeaa7;
+            color: #d35400;
+            font-weight: bold;
+            border-left: 4px solid #e17055;
+        }
+        /* Memory Entities */
+        .entity {
+            padding: 10px;
+            border: 2px solid;
+            border-radius: 6px;
+            text-align: center;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.5s ease;
+            position: relative;
+            background: white;
+            z-index: 2;
+        }
+        .variable { border-color: #0984e3; color: #0984e3; font-weight: bold; width: 100px; margin: 0 auto; }
+        .object { border-color: #00b894; color: #00b894; font-family: monospace; font-size: 16px; margin: 0 auto; min-width: 150px;}
+        .id-tag {
+            font-size: 10px;
+            color: #888;
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        /* Controls */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #0984e3;
+            color: white;
+            transition: 0.2s;
+        }
+        button:hover { background-color: #74b9ff; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        
+        /* SVG layer for arrows */
+        #svg-layer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        path {
+            fill: none;
+            stroke: #2d3436;
+            stroke-width: 2;
+            stroke-dasharray: 5;
+            animation: dash 1s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -10; }
+        }
+    </style>
+</head>
+<body>
+    <div style="position:fixed; top:12px; right:12px; z-index:9999; background:#0f1b2f; border:1px solid rgba(255,255,255,0.16); border-radius:999px; padding:8px 12px; box-shadow:0 8px 20px rgba(0,0,0,0.25);">
+      <a href="../../index.html" style="color:#f3f7ff; text-decoration:none; font-weight:600;">← Back to Home</a>
+    </div>
+    <p>Click "Next Step" to trace how Python stores these variables in memory.</p>
+
+    <div class="container" id="main-container">
+        <svg id="svg-layer">
+            <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#2d3436" style="stroke: none;" />
+                </marker>
+            </defs>
+        </svg>
+
+        <div class="panel">
+            <div class="panel-title">Code Execution</div>
+            <div id="code-1" class="code-line">a = 25</div>
+            <div id="code-2" class="code-line">b = a</div>
+            <div id="code-3" class="code-line">c = 25</div>
+            <div id="code-4" class="code-line">names = ["Asha", "Riya"]</div>
+            <div id="code-5" class="code-line">same_names = names</div>
+            <div id="code-6" class="code-line">same_names.append("Neha")</div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Variables (Stack Reference)</div>
+            <div id="var-a" class="entity variable">a</div>
+            <div id="var-b" class="entity variable">b</div>
+            <div id="var-c" class="entity variable">c</div>
+            <div id="var-names" class="entity variable">names</div>
+            <div id="var-samenames" class="entity variable">same_names</div>
+        </div>
+
+        <div class="panel" style="justify-content: space-around;">
+            <div class="panel-title">Objects in Memory (Heap)</div>
+            <div id="obj-25" class="entity object">
+                int: 25
+                <span class="id-tag">id: 100500</span>
+            </div>
+            <div id="obj-list" class="entity object">
+                list: ["Asha", "Riya"]
+                <span class="id-tag">id: 998877</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="btn-reset" onclick="reset()">Reset</button>
+        <button id="btn-next" onclick="nextStep()">Next Step</button>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const maxSteps = 6;
+        const svgLayer = document.getElementById('svg-layer');
+
+        // Logic mapped to each step
+        const steps = [
+            // Step 0: Initial State
+            function() { clearAll(); },
+            // Step 1: a = 25
+            function() {
+                highlightCode('code-1');
+                show('var-a'); show('obj-25');
+                drawArrow('var-a', 'obj-25', 'path-a');
+            },
+            // Step 2: b = a
+            function() {
+                highlightCode('code-2');
+                show('var-b');
+                drawArrow('var-b', 'obj-25', 'path-b');
+            },
+            // Step 3: c = 25
+            function() {
+                highlightCode('code-3');
+                show('var-c');
+                drawArrow('var-c', 'obj-25', 'path-c');
+            },
+            // Step 4: names = [...]
+            function() {
+                highlightCode('code-4');
+                show('var-names'); show('obj-list');
+                drawArrow('var-names', 'obj-list', 'path-names');
+            },
+            // Step 5: same_names = names
+            function() {
+                highlightCode('code-5');
+                show('var-samenames');
+                drawArrow('var-samenames', 'obj-list', 'path-samenames');
+            },
+            // Step 6: Mutate list
+            function() {
+                highlightCode('code-6');
+                document.getElementById('obj-list').innerHTML = 'list: ["Asha", "Riya", "Neha"] <span class="id-tag">id: 998877 (Mutated!)</span>';
+                document.getElementById('obj-list').style.borderColor = '#d63031';
+                document.getElementById('obj-list').style.color = '#d63031';
+            }
+        ];
+
+        function nextStep() {
+            if (currentStep < maxSteps) {
+                currentStep++;
+                steps[currentStep]();
+                document.getElementById('btn-next').disabled = (currentStep === maxSteps);
+            }
+        }
+
+        function reset() {
+            currentStep = 0;
+            document.getElementById('btn-next').disabled = false;
+            document.getElementById('obj-list').innerHTML = 'list: ["Asha", "Riya"] <span class="id-tag">id: 998877</span>';
+            document.getElementById('obj-list').style.borderColor = '#00b894';
+            document.getElementById('obj-list').style.color = '#00b894';
+            steps[0]();
+        }
+
+        // Helper functions
+        function show(id) { document.getElementById(id).style.opacity = '1'; }
+        function hide(id) { document.getElementById(id).style.opacity = '0'; }
+        
+        function highlightCode(codeId) {
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
+            if(codeId) document.getElementById(codeId).classList.add('active');
+        }
+
+        function clearAll() {
+            highlightCode(null);
+            document.querySelectorAll('.entity').forEach(el => hide(el.id));
+            svgLayer.innerHTML = '<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2d3436" style="stroke: none;" /></marker></defs>';
+        }
+
+        // Dynamically draws an SVG arrow between two HTML elements
+        function drawArrow(fromId, toId, pathId) {
+            const containerBox = document.getElementById('main-container').getBoundingClientRect();
+            const fromBox = document.getElementById(fromId).getBoundingClientRect();
+            const toBox = document.getElementById(toId).getBoundingClientRect();
+
+            // Calculate center points relative to the container
+            const startX = (fromBox.right - containerBox.left);
+            const startY = (fromBox.top + fromBox.height/2) - containerBox.top;
+            const endX = (toBox.left - containerBox.left) - 10; // offset for arrow head
+            const endY = (toBox.top + toBox.height/2) - containerBox.top;
+
+            // Draw a curved bezier path
+            const curve = 50; 
+            const d = `M ${startX} ${startY} C ${startX + curve} ${startY}, ${endX - curve} ${endY}, ${endX} ${endY}`;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('id', pathId);
+            path.setAttribute('d', d);
+            path.setAttribute('marker-end', 'url(#arrow)');
+            svgLayer.appendChild(path);
+        }
+
+        // Re-draw arrows if window resizes
+        window.addEventListener('resize', () => {
+            const oldStep = currentStep;
+            reset();
+            while(currentStep < oldStep) { nextStep(); }
+        });
+
+        // Init
+        reset();
+    </script>
+</body>
+</html>
