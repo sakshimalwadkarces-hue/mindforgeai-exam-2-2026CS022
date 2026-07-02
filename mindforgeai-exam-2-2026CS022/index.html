@@ -1,186 +1,660 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MindforgeAI Exam 2 — Navigation Hub</title>
-    <meta name="description" content="Simple expandable navigation for the MindforgeAI Exam 2 workspace." />
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #07111f;
-        --panel: #0f1b2f;
-        --panel-2: #16253d;
-        --text: #f3f7ff;
-        --muted: #9bb0ca;
-        --line: rgba(255, 255, 255, 0.14);
-        --accent: #3fd0ff;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MindForge AI Exam Repository Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #eef4ff;
+      --bg-strong: #f8faff;
+      --text: #14213d;
+      --muted: #64748b;
+      --card: rgba(255, 255, 255, 0.9);
+      --border: rgba(99, 102, 241, 0.16);
+      --accent: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      --accent-2: #7c3aed;
+      --shadow: 0 18px 45px rgba(99, 102, 241, 0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(99, 102, 241, 0.12), transparent 28%),
+        linear-gradient(145deg, #f7fbff 0%, var(--bg) 100%);
+      min-height: 100vh;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: rgba(255, 255, 255, 0.72);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--accent-2);
+      white-space: nowrap;
+    }
+
+    .brand-badge {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      color: white;
+      background: var(--accent);
+      box-shadow: 0 10px 24px rgba(99, 102, 241, 0.24);
+      font-size: 1.05rem;
+    }
+
+    .nav-pills {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+
+    .nav-pills::-webkit-scrollbar { display: none; }
+
+    .nav-pill {
+      border: 0;
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--muted);
+      padding: 10px 15px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, background 0.25s ease;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .nav-pill:hover {
+      transform: translateY(-2px);
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 12px 28px rgba(99, 102, 241, 0.21);
+    }
+
+    .nav-pill.active {
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 12px 28px rgba(99, 102, 241, 0.24);
+    }
+
+    .page-shell {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(248,250,255,0.95));
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: var(--shadow);
+      border-radius: 30px;
+      padding: 28px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 22px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(99,102,241,0.16), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.9rem, 3.3vw, 2.8rem);
+      line-height: 1.1;
+      background: var(--accent);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero .eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .hero-stat {
+      background: rgba(99, 102, 241, 0.08);
+      color: var(--accent-2);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid rgba(99, 102, 241, 0.12);
+    }
+
+    .hero-pill {
+      background: var(--accent);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 10px 24px rgba(99, 102, 241, 0.2);
+    }
+
+    .content-panel {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+
+    .content-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.18rem;
+    }
+
+    .section-header .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .group-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 16px 35px rgba(15, 23, 42, 0.05);
+    }
+
+    .group-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .file-card {
+      position: relative;
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      overflow: hidden;
+    }
+
+    .file-card[data-kind="md"] {
+      background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .file-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: var(--accent);
+      transform: scaleX(0.2);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+
+    .file-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 36px rgba(99, 102, 241, 0.16);
+    }
+
+    .file-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .file-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-bubble {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      font-size: 1.45rem;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.2));
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.6);
+    }
+
+    .file-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-weight: 700;
+      font-size: 0.98rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-type {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .file-card .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-2);
+      background: rgba(99, 102, 241, 0.09);
+      border: 1px solid rgba(99, 102, 241, 0.12);
+      width: fit-content;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      width: fit-content;
+      box-shadow: 0 10px 20px rgba(99, 102, 241, 0.14);
+    }
+
+    .card-link:hover {
+      transform: translateY(-2px);
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+      padding: 8px 0 0;
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner,
+      .page-shell {
+        padding-left: 14px;
+        padding-right: 14px;
       }
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: "Segoe UI", Arial, sans-serif;
-        background: linear-gradient(135deg, var(--bg), #13203a);
-        color: var(--text);
-        line-height: 1.6;
-      }
-      a { color: inherit; text-decoration: none; }
-      .page { max-width: 960px; margin: 0 auto; padding: 32px 20px 48px; }
+
       .hero {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        padding: 24px;
-        margin-bottom: 18px;
+        flex-direction: column;
+        align-items: flex-start;
       }
-      .hero h1 { margin: 0 0 8px; font-size: 1.8rem; }
-      .hero p { margin: 0; color: var(--muted); }
-      .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 18px;
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
       }
-      .home-link {
-        display: inline-block;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: rgba(63, 208, 255, 0.16);
-        border: 1px solid rgba(63, 208, 255, 0.28);
-        color: var(--text);
-      }
-      details {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        margin-bottom: 12px;
-        overflow: hidden;
-      }
-      summary {
-        list-style: none;
-        cursor: pointer;
-        padding: 16px 18px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        font-weight: 600;
-      }
-      summary::-webkit-details-marker { display: none; }
-      .meta {
-        color: var(--muted);
-        font-size: 0.9rem;
-        font-weight: 500;
-        white-space: nowrap;
-      }
-      .links { padding: 0 18px 18px; display: grid; gap: 8px; }
-      .link-card {
-        display: block;
-        padding: 10px 12px;
-        border-radius: 12px;
-        background: var(--panel-2);
-        border: 1px solid rgba(255,255,255,0.08);
-      }
-      .link-card strong { display: block; margin-bottom: 2px; }
-      .link-card span { color: var(--muted); font-size: 0.92rem; }
-      .link-card:hover { border-color: rgba(63, 208, 255, 0.28); }
-      .footer { margin-top: 20px; color: var(--muted); font-size: 0.95rem; text-align: center; }
-      @media (max-width: 600px) {
-        .topbar { flex-direction: column; align-items: flex-start; }
-        summary { align-items: flex-start; flex-direction: column; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page">
-      <div class="topbar">
-        <div>
-          <h1>MindforgeAI Exam 2</h1>
-          <p>Navigate the solutions, notebook files, visuals, and submission materials from one place.</p>
-        </div>
-        <a class="home-link" href="index.html">Home</a>
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-badge">✦</div>
+        <div>MINDFORGEAI-EXAM-2-2026CS022</div>
       </div>
-
-      <div class="hero">
-        <p>Open each section to jump directly to the relevant files for review or submission.</p>
-      </div>
-
-      <details open>
-        <summary>
-          <span>Section A · Workspace Architecture & Analytics</span>
-          <span class="meta">Solutions</span>
-        </summary>
-        <div class="links">
-          <a class="link-card" href="Section_A/Q1_Workspace_Architecture/Q1_Solution.html"><strong>Q1 Solution</strong><span>Workspace architecture overview</span></a>
-          <a class="link-card" href="Section_A/Q2_Data_Analytics_Pipeline/Q2_Solution.py"><strong>Q2 Solution Script</strong><span>Analytics pipeline implementation</span></a>
-          <a class="link-card" href="Section_A/Q2_Data_Analytics_Pipeline/visualizer.html"><strong>Q2 Visualizer</strong><span>Interactive output preview</span></a>
-          <a class="home-link" href="index.html">Back to Home</a>
-        </div>
-      </details>
-
-      <details>
-        <summary>
-          <span>Section B · Programming Foundations</span>
-          <span class="meta">Solutions</span>
-        </summary>
-        <div class="links">
-          <a class="link-card" href="Section_B/Q3_Variables_Memory/Q3_Solution.html"><strong>Q3 Solution</strong><span>Variables and memory concepts</span></a>
-          <a class="link-card" href="Section_B/Q4_Control_Flow/Q4_Solution.html"><strong>Q4 Solution</strong><span>Control flow examples</span></a>
-          <a class="link-card" href="Section_B/Q5_Loop_Function/Q5_Solution.html"><strong>Q5 Solution</strong><span>Loops and functions</span></a>
-          <a class="home-link" href="index.html">Back to Home</a>
-        </div>
-      </details>
-
-      <details>
-        <summary>
-          <span>Section C · Practical Notebook</span>
-          <span class="meta">Notebook & Data</span>
-        </summary>
-        <div class="links">
-          <a class="link-card" href="Section_C/Practical_Notebook/Section_C_Notebook.ipynb"><strong>Notebook</strong><span>Practical work notebook</span></a>
-          <a class="link-card" href="Section_C/Practical_Notebook/week_assesment.csv"><strong>Assessment Data</strong><span>CSV dataset for the notebook</span></a>
-          <a class="home-link" href="index.html">Back to Home</a>
-        </div>
-      </details>
-
-      <details>
-        <summary>
-          <span>Section D · Data Interpretation</span>
-          <span class="meta">Answers & Visuals</span>
-        </summary>
-        <div class="links">
-          <a class="link-card" href="Section_D/Data_Analytics_Interpretation/Interpretation_Answers.md"><strong>Interpretation Answers</strong><span>Written analysis responses</span></a>
-          <a class="link-card" href="Section_D/Data_Analytics_Interpretation/visulizer.html"><strong>Visualizer</strong><span>Visual interpretation output</span></a>
-          <a class="home-link" href="index.html">Back to Home</a>
-        </div>
-      </details>
-
-      <details>
-        <summary>
-          <span>Section E · Project Package</span>
-          <span class="meta">Submission Assets</span>
-        </summary>
-        <div class="links">
-          <a class="link-card" href="Section_E/mindforgeai-exam-2-Sakshi-malwadkar/README.md"><strong>Project README</strong><span>Package overview and notes</span></a>
-          <a class="link-card" href="Section_E/mindforgeai-exam-2-Sakshi-malwadkar/copy_notebook.py"><strong>Notebook Copy Script</strong><span>Copy notebook helper</span></a>
-          <a class="link-card" href="Section_E/mindforgeai-exam-2-Sakshi-malwadkar/copy_and_verify_csv.py"><strong>CSV Copy Script</strong><span>Verify and copy dataset</span></a>
-          <a class="home-link" href="index.html">Back to Home</a>
-        </div>
-      </details>
-
-      <details>
-        <summary>
-          <span>Section F · Submission Links</span>
-          <span class="meta">Submission Notes</span>
-        </summary>
-        <div class="links">
-          <a class="link-card" href="Section_F/Submission_Links/Portal_Links_Explanation.md"><strong>Portal Links Notes</strong><span>Submission guidance and links</span></a>
-          <a class="home-link" href="index.html">Back to Home</a>
-        </div>
-      </details>
-
-      <div class="footer">Use the section links above to open the files directly.</div>
+      <nav class="nav-pills" id="nav-pills"></nav>
     </div>
-  </body>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Repository Overview</div>
+        <h1>Welcome to the MindForge Dashboard</h1>
+        <p>Explore every section of the project in a refined, professional workspace view with fast access to notes, notebooks, code, and deliverables.</p>
+        <div class="hero-stats">
+          <div class="hero-stat">6 Sections</div>
+          <div class="hero-stat">20+ Assets</div>
+          <div class="hero-stat">Live Navigation</div>
+        </div>
+      </div>
+      <div class="hero-pill">Section-wise navigation</div>
+    </section>
+
+    <section class="content-panel visible" id="content-panel"></section>
+  </main>
+
+  <script>
+    const sections = [
+      {
+        key: 'section_a',
+        label: 'Section A',
+        title: 'Workspace Architecture & Analytics Pipeline',
+        subtitle: 'Section landing page, architecture notes, and pipeline artifacts',
+        groups: [
+          {
+            title: 'Section Root',
+            items: [
+              { name: 'index.html', type: 'html', path: 'Section_A/index.html' },
+              { name: 'README.md', type: 'md', path: 'Section_A/README.md' }
+            ]
+          },
+          {
+            title: 'Q1 Workspace Architecture',
+            items: [
+              { name: 'Q1_Solution.html', type: 'html', path: 'Section_A/Q1_Workspace_Architecture/Q1_Solution.html' },
+              { name: 'README.md', type: 'md', path: 'Section_A/Q1_Workspace_Architecture/README.md' }
+            ]
+          },
+          {
+            title: 'Q2 Data Analytics Pipeline',
+            items: [
+              { name: 'Q2_Solution.py', type: 'py', path: 'Section_A/Q2_Data_Analytics_Pipeline/Q2_Solution.py' },
+              { name: 'README.md', type: 'md', path: 'Section_A/Q2_Data_Analytics_Pipeline/README.md' },
+              { name: 'visualizer.html', type: 'html', path: 'Section_A/Q2_Data_Analytics_Pipeline/visualizer.html' }
+            ]
+          }
+        ]
+      },
+      {
+        key: 'section_b',
+        label: 'Section B',
+        title: 'Core Programming Concepts',
+        subtitle: 'Variables, control flow, and loop logic',
+        groups: [
+          {
+            title: 'Section Root',
+            items: [
+              { name: 'index.html', type: 'html', path: 'Section_B/index.html' },
+              { name: 'README.md', type: 'md', path: 'Section_B/README.md' }
+            ]
+          },
+          {
+            title: 'Q3 Variables & Memory',
+            items: [
+              { name: 'Q3_Explanation.md', type: 'md', path: 'Section_B/Q3_Variables_Memory/Q3_Explanation.md' },
+              { name: 'Q3_Solution.html', type: 'html', path: 'Section_B/Q3_Variables_Memory/Q3_Solution.html' }
+            ]
+          },
+          {
+            title: 'Q4 Control Flow',
+            items: [
+              { name: 'Q4_Explanation.md', type: 'md', path: 'Section_B/Q4_Control_Flow/Q4_Explanation.md' },
+              { name: 'Q4_Solution.html', type: 'html', path: 'Section_B/Q4_Control_Flow/Q4_Solution.html' }
+            ]
+          },
+          {
+            title: 'Q5 Loop & Function',
+            items: [
+              { name: 'Q5_Explanation.md', type: 'md', path: 'Section_B/Q5_Loop_Function/Q5_Explanation.md' },
+              { name: 'Q5_Solution.html', type: 'html', path: 'Section_B/Q5_Loop_Function/Q5_Solution.html' }
+            ]
+          }
+        ]
+      },
+      {
+        key: 'section_c',
+        label: 'Section C',
+        title: 'Practical Notebook',
+        subtitle: 'Notebook walkthrough and assessment data',
+        groups: [
+          {
+            title: 'Section Root',
+            items: [
+              { name: 'index.html', type: 'html', path: 'Section_C/index.html' },
+              { name: 'README.md', type: 'md', path: 'Section_C/README.md' }
+            ]
+          },
+          {
+            title: 'Practical_Notebook',
+            items: [
+              { name: 'Notebook_Explanation.md', type: 'md', path: 'Section_C/Practical_Notebook/Notebook_Explanation.md' },
+              { name: 'Section_C_Notebook.ipynb', type: 'ipynb', path: 'Section_C/Practical_Notebook/Section_C_Notebook.ipynb' },
+              { name: 'week_assesment.csv', type: 'csv', path: 'Section_C/Practical_Notebook/week_assesment.csv' }
+            ]
+          }
+        ]
+      },
+      {
+        key: 'section_d',
+        label: 'Section D',
+        title: 'Data Analytics Interpretation',
+        subtitle: 'Interpretation answers and visualization',
+        groups: [
+          {
+            title: 'Section Root',
+            items: [
+              { name: 'index.html', type: 'html', path: 'Section_D/index.html' },
+              { name: 'README.md', type: 'md', path: 'Section_D/README.md' }
+            ]
+          },
+          {
+            title: 'Data_Analytics_Interpretation',
+            items: [
+              { name: 'Interpretation_Answers.md', type: 'md', path: 'Section_D/Data_Analytics_Interpretation/Interpretation_Answers.md' },
+              { name: 'visulizer.html', type: 'html', path: 'Section_D/Data_Analytics_Interpretation/visulizer.html' }
+            ]
+          }
+        ]
+      },
+      {
+        key: 'section_e',
+        label: 'Section E',
+        title: 'Project Delivery Assets',
+        subtitle: 'Supporting code, notebooks, and screenshot assets',
+        groups: [
+          {
+            title: 'Section Root',
+            items: [
+              { name: 'index.html', type: 'html', path: 'Section_E/index.html' },
+              { name: 'README.md', type: 'md', path: 'Section_E/README.md' }
+            ]
+          },
+          {
+            title: 'mindforgeai-exam-2-Sakshi-malwadkar',
+            items: [
+              { name: 'copy_and_verify_csv.py', type: 'py', path: 'Section_E/mindforgeai-exam-2-Sakshi-malwadkar/copy_and_verify_csv.py' },
+              { name: 'copy_notebook.py', type: 'py', path: 'Section_E/mindforgeai-exam-2-Sakshi-malwadkar/copy_notebook.py' },
+              { name: 'README.md', type: 'md', path: 'Section_E/mindforgeai-exam-2-Sakshi-malwadkar/README.md' },
+              { name: 'data', type: 'folder', path: 'Section_E/mindforgeai-exam-2-Sakshi-malwadkar/data' },
+              { name: 'notebooks', type: 'folder', path: 'Section_E/mindforgeai-exam-2-Sakshi-malwadkar/notebooks' },
+              { name: 'screenshots', type: 'folder', path: 'Section_E/mindforgeai-exam-2-Sakshi-malwadkar/screenshots' }
+            ]
+          }
+        ]
+      },
+      {
+        key: 'section_f',
+        label: 'Section F',
+        title: 'Submission Links',
+        subtitle: 'Portal references and submission notes',
+        groups: [
+          {
+            title: 'Section Root',
+            items: [
+              { name: 'index.html', type: 'html', path: 'Section_F/index.html' },
+              { name: 'README.md', type: 'md', path: 'Section_F/README.md' }
+            ]
+          },
+          {
+            title: 'Submission_Links',
+            items: [
+              { name: 'Portal_Links_Explanation.md', type: 'md', path: 'Section_F/Submission_Links/Portal_Links_Explanation.md' },
+              { name: 'index.html', type: 'html', path: 'Section_F/Submission_Links/index.html' },
+              { name: 'README.md', type: 'md', path: 'Section_F/Submission_Links/README.md' }
+            ]
+          }
+        ]
+      }
+    ];
+
+    const navPills = document.getElementById('nav-pills');
+    const contentPanel = document.getElementById('content-panel');
+
+    function getIcon(type) {
+      switch (type) {
+        case 'md': return '📝';
+        case 'ipynb': return '🪐';
+        case 'py': return '🐍';
+        case 'csv': return '📈';
+        case 'html': return '🌐';
+        case 'folder': return '📁';
+        default: return '📄';
+      }
+    }
+
+    function renderSection(sectionKey) {
+      const section = sections.find((entry) => entry.key === sectionKey) || sections[0];
+      const html = `
+        <div class="section-header">
+          <div>
+            <h2>${section.title}</h2>
+            <div class="subtitle">${section.subtitle}</div>
+          </div>
+          <div class="hero-pill">${section.label}</div>
+        </div>
+        ${section.groups.map((group) => `
+          <div class="group-card">
+            <h3 class="group-title">📂 ${group.title}</h3>
+            <div class="grid">
+              ${group.items.map((item) => {
+                const isClickable = item.type !== 'folder';
+                const card = `
+                  <article class="file-card" data-kind="${item.type}">
+                    <div class="file-top">
+                      <div class="icon-bubble">${getIcon(item.type)}</div>
+                      <div class="file-meta">
+                        <div class="file-name">${item.name}</div>
+                        <div class="file-type">${item.type === 'folder' ? 'Directory' : item.type.toUpperCase()} File</div>
+                      </div>
+                    </div>
+                    <div class="chip">${item.type === 'md' ? 'Documentation' : item.type === 'folder' ? 'Folder' : 'Open File'}</div>
+                    ${isClickable ? `<a class="card-link" href="${item.path}" target="_blank" rel="noopener noreferrer">${item.type === 'md' ? 'Read' : 'Open'}</a>` : `<div class="empty">Directory view</div>`}
+                  </article>`;
+                return card;
+              }).join('')}
+            </div>
+          </div>
+        `).join('')}
+      `;
+
+      contentPanel.classList.remove('visible');
+      setTimeout(() => {
+        contentPanel.innerHTML = html;
+        contentPanel.classList.add('visible');
+      }, 120);
+    }
+
+    sections.forEach((section) => {
+      const button = document.createElement('button');
+      button.className = 'nav-pill';
+      button.textContent = section.label;
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.nav-pill').forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        renderSection(section.key);
+      });
+      navPills.appendChild(button);
+    });
+
+    const firstButton = navPills.querySelector('.nav-pill');
+    if (firstButton) {
+      firstButton.classList.add('active');
+    }
+
+    renderSection(sections[0].key);
+  </script>
+</body>
 </html>
