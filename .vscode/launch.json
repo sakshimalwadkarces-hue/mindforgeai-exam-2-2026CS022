@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindForge AI Exam Console 2026CS022</title>
+    <style>
+        :root {
+            --bg-gradient: radial-gradient(circle at top left, #0b132b, #1c2541, #0a0f1d);
+            --panel-bg: rgba(30, 41, 59, 0.45);
+            --panel-border: rgba(56, 189, 248, 0.2);
+            --panel-glow: rgba(56, 189, 248, 0.05);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --cyan: #38bdf8;
+            --purple: #a855f7;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --rose: #f43f5e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--panel-border) transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            height: 100vh;
+            overflow: hidden;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        /* Common Glass Glassmorphism Styles */
+        .glass-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 12px var(--panel-glow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 18px;
+            border-bottom: 1px solid var(--panel-border);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--cyan);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* --- LEFT SIDEBAR: MISSION SECTIONS --- */
+        .sidebar { grid-column: 1; }
+        
+        .brand {
+            padding: 20px;
+            border-bottom: 1px solid var(--panel-border);
+            text-align: center;
+        }
+        .brand h1 {
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, var(--text-primary), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .brand p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .section-list {
+            list-style: none;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .section-btn {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .section-btn .icon {
+            font-size: 1.3rem;
+            opacity: 0.7;
+        }
+
+        .section-btn .info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-btn .tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .section-btn .title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .section-btn:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            background: rgba(56, 189, 248, 0.05);
+            transform: translateX(4px);
+        }
+
+        .section-btn.active {
+            border-color: var(--cyan);
+            background: rgba(56, 189, 248, 0.12);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+        .section-btn.active .title { color: var(--text-primary); }
+        .section-btn.active .tag { color: var(--cyan); }
+        .section-btn.active .icon { opacity: 1; }
+
+        /* --- CENTER PANEL: VIEWING PANE --- */
+        .center-pane { grid-column: 2; }
+        
+        .center-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sub-folder-group {
+            background: rgba(15, 23, 42, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .sub-folder-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .file-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            border-color: var(--panel-border);
+            background: rgba(30, 41, 59, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .file-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .f-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .f-name {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .f-ext {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 1px;
+        }
+
+        .btn-view {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--cyan);
+            padding: 5px 10px;
+            font-size: 0.72rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-view:hover {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        /* Preview Overlay Feature Inside Center Content */
+        .preview-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .preview-title {
+            font-size: 0.75rem;
+            color: var(--purple);
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .preview-body {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* --- RIGHT PANEL: INTELLIGENCE & INSIGHTS --- */
+        .right-pane { grid-column: 3; }
+
+        .pane-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .widget {
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .widget-title {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .widget-content {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .qa-card {
+            background: rgba(168, 85, 247, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+
+        .qa-q { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        .qa-a { color: var(--text-secondary); font-size: 0.75rem; }
+
+        /* Welcome Screen styling */
+        .welcome-screen {
+            text-align: center;
+            margin: auto;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        .welcome-screen h2 { color: var(--cyan); font-weight: 400; }
+        .welcome-screen p { color: var(--text-muted); font-size: 0.85rem; }
+
+        .pulse-circle {
+            width: 60px;
+            height: 60px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 2px solid var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(56, 189, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT SIDEBAR -->
+    <nav class="glass-card sidebar">
+        <div class="brand">
+            <h1>MINDFORGE AI</h1>
+            <p>EXAM DASHBOARD CONSOLE</p>
+        </div>
+        <div class="panel-header">Mission Sections</div>
+        <ul class="section-list" id="section-list">
+            <!-- Dynamically Rendered -->
+        </ul>
+    </nav>
+
+    <!-- CENTER DYNAMIC VIEWING PANE -->
+    <main class="glass-card center-pane">
+        <div class="panel-header">
+            <span id="center-panel-title">Dynamic Viewing Pane</span>
+            <span style="color: var(--text-muted); font-size: 0.7rem;" id="sys-status">SYS READY</span>
+        </div>
+        <div class="center-content" id="center-content">
+            <div class="welcome-screen">
+                <div class="pulse-circle">📡</div>
+                <h2>Awaiting Synchronization</h2>
+                <p>Select an exam track section from the telemetry sidebar panel to expand subdirectories, source notes, scripts, and localized repositories.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- RIGHT PANEL: INSIGHTS & INTEL -->
+    <section class="glass-card right-pane">
+        <div class="panel-header">Intelligence & Insights</div>
+        <div class="pane-body">
+            
+            <div class="widget">
+                <div class="widget-title">🧠 Q&A AI ASSISTANT</div>
+                <div class="widget-content">
+                    Analytical query responses compiled across project requirements:
+                    <div class="qa-card">
+                        <div class="qa-q">Q3: Compare SGD vs RMSProp</div>
+                        <div class="qa-a">SGD utilizes static, unadjusted learning steps. RMSProp applies an exponentially decaying average of squared gradients to normalize and scale step adjustments adaptively per parameter.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-title">📑 SECTION SUMMARY NOTES</div>
+                <div class="widget-content" id="intel-notes">
+                    No directory active. Select a navigation link to extract context logs, evaluation answers, and workflow files.
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-title">🛠️ NAVIGATION GUIDE</div>
+                <div class="widget-content">
+                    <ul>
+                        <li>• Sections partition workflows directly.</li>
+                        <li>• Integrated document previews append dynamically below lists.</li>
+                        <li>• Relative links trigger local system tracking targets.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        // Exact schema mapped safely based on workspace architecture
+        const database = {
+            "section_a": {
+                title: "Section A: Workspace & Pipeline",
+                icon: "📐",
+                notes: "Houses structural designs for system architectures alongside core operational components handling automated analytics execution sequences.",
+                folders: {
+                    "Q1_Workspace_Architecture": [],
+                    "Q2_Data_Analytics_Pipeline": []
+                }
+            },
+            "section_b": {
+                title: "Section B: Core Programming Concepts",
+                icon: "⚛️",
+                notes: "Covers algorithmic fundamentals, optimization techniques across stack memory handling parameters, logical processing layers, and programmatic cycles.",
+                folders: {
+                    "Q3_Variables_Memory": [],
+                    "Q4_Control_Flow": [],
+                    "Q5_Loop_Function": []
+                }
+            },
+            "section_c": {
+                title: "Section C: Practical Notebook",
+                icon: "💻",
+                notes: "Contains exploratory dynamic files detailing machine learning pipeline code execution alongside corresponding evaluation data schemas.",
+                folders: {
+                    "Practical_Notebook": [
+                        { name: "Notebook_Explanation.md", type: "md", preview: "Comprehensive technical notes evaluating core model metrics, parameter choices, and dataset processing workflows." },
+                        { name: "Section_C_Notebook.ipynb", type: "ipynb", preview: "Live runtime script implementing training parameters, optimization modules, and interactive plot assets." },
+                        { name: "week_assesment.csv", type: "csv", preview: "Structured source array holding test verification arrays, target markers, and telemetry inputs." }
+                    ]
+                }
+            },
+            "section_d": {
+                title: "Section D: Data Interpretation",
+                icon: "📊",
+                notes: "Detailed answer summaries reviewing metric outputs alongside structural visual tools compiled natively for easy viewing.",
+                folders: {
+                    "Data_Analytics_Interpretation": [
+                        { name: "Interpretation_Answers.md", type: "md", preview: "Theoretical review parsing model performance indices, confusion arrays, and edge-case operational constraints." },
+                        { name: "visulizer.html", type: "html", preview: "Front-end charting utility embedding real-time graphical charts for intuitive vector map exploration." }
+                    ]
+                }
+            },
+            "section_e": {
+                title: "Section E: Localized Repository",
+                icon: "🗂️",
+                notes: "The primary workspace containing script assets, testing utilities, verification sequences, and structural text maps.",
+                folders: {
+                    "mindforgeai-exam-2-Sakshi-malwadkar": [
+                        { name: "data", type: "dir", preview: "Directory tracking internal test files and arrays." },
+                        { name: "notebooks", type: "dir", preview: "Directory tracking operational notebooks." },
+                        { name: "screenshots", type: "dir", preview: "Directory containing execution logs and image results." },
+                        { name: "copy_and_verify_csv.py", type: "py", preview: "Python verification script validating parsing boundaries, headers, and asset constraints." },
+                        { name: "copy_notebook.py", type: "py", preview: "Utility moving execution instances clean across environments safely." },
+                        { name: "README.md", type: "md", preview: "Primary installation index mapping student credentials and verification instructions." }
+                    ]
+                }
+            },
+            "section_f": {
+                title: "Section F: Submissions Link Hub",
+                icon: "🚀",
+                notes: "Tracks relative reference vectors, upload instructions, and validation maps to finish deployment verification cleanly.",
+                folders: {
+                    "Submission_Links": [
+                        { name: "Portal_Links_Explanation.md", type: "md", preview: "Guide containing remote endpoint references and validation processes." },
+                        { name: "index.html", type: "html", preview: "Alternative localized interface structure backup entry point." },
+                        { name: "README.md", type: "md", preview: "Verification checklist detailing criteria fulfillment." }
+                    ]
+                }
+            }
+        };
+
+        function getFileEmoji(type) {
+            switch(type) {
+                case 'md': return '📝';
+                case 'ipynb': return '📓';
+                case 'py': return '🐍';
+                case 'csv': return '📊';
+                case 'html': return '🌐';
+                case 'dir': return '📁';
+                default: return '📄';
+            }
+        }
+
+        const listContainer = document.getElementById('section-list');
+        const contentContainer = document.getElementById('center-content');
+        const titleContainer = document.getElementById('center-panel-title');
+        const statusContainer = document.getElementById('sys-status');
+        const intelNotes = document.getElementById('intel-notes');
+
+        // Build left menu items
+        Object.keys(database).forEach(key => {
+            const data = database[key];
+            const li = document.createElement('li');
+            li.className = 'section-btn';
+            li.innerHTML = `
+                <div class="icon">${data.icon}</div>
+                <div class="info">
+                    <span class="tag">${key.replace('_',' ').toUpperCase()}</span>
+                    <span class="title">${data.title.split(': ')[1] || data.title}</span>
+                </div>
+            `;
+            li.addEventListener('click', () => triggerTelemetry(key, li));
+            listContainer.appendChild(li);
+        });
+
+        // Handle structural view updates
+        function triggerTelemetry(key, activeElement) {
+            document.querySelectorAll('.section-btn').forEach(b => b.classList.remove('active'));
+            activeElement.classList.add('active');
+
+            const section = database[key];
+            titleContainer.textContent = section.title;
+            statusContainer.textContent = `SYNCED // ${key.toUpperCase()}`;
+            intelNotes.textContent = section.notes;
+            
+            contentContainer.innerHTML = '';
+
+            // Generate Subdirectories loops
+            for (const [folderName, files] of Object.entries(section.folders)) {
+                const group = document.createElement('div');
+                group.className = 'sub-folder-group';
+                
+                group.innerHTML = `
+                    <div class="sub-folder-title">📂 ${folderName}</div>
+                `;
+
+                if (files.length === 0) {
+                    group.innerHTML += `<div style="font-size:0.78rem; color:var(--text-muted); font-style:italic; padding-left:22px;">No loose assets inside directory configuration workspace layout</div>`;
+                } else {
+                    const grid = document.createElement('div');
+                    grid.className = 'file-grid';
+
+                    files.forEach(file => {
+                        const targetUrl = `./${folderName}/${file.name}`;
+                        const item = document.createElement('div');
+                        item.className = 'file-item';
+                        item.innerHTML = `
+                            <div class="file-meta">
+                                <span class="f-icon">${getFileEmoji(file.type)}</span>
+                                <div style="min-width:0;">
+                                    <div class="f-name" title="${file.name}">${file.name}</div>
+                                    <div class="f-ext">${file.type === 'dir' ? 'Directory' : file.type + ' architecture'}</div>
+                                </div>
+                            </div>
+                            <a href="${targetUrl}" target="_blank" class="btn-view">Access</a>
+                        `;
+                        
+                        // Append context inspection overlay when clicked
+                        item.addEventListener('click', (e) => {
+                            if(e.target.tagName !== 'A') {
+                                removeExistingPreviews();
+                                const pBox = document.createElement('div');
+                                pBox.className = 'preview-box';
+                                pBox.innerHTML = `
+                                    <div class="preview-title">🕵️ Telemetry File Preview: ${file.name}</div>
+                                    <div class="preview-body">${file.preview}</div>
+                                `;
+                                item.parentNode.insertBefore(pBox, item.nextSibling);
+                            }
+                        });
+
+                        grid.appendChild(item);
+                    });
+                    group.appendChild(grid);
+                }
+                contentContainer.appendChild(group);
+            }
+        }
+
+        function removeExistingPreviews() {
+            document.querySelectorAll('.preview-box').forEach(el => el.remove());
+        }
+    </script>
+</body>
+</html>
